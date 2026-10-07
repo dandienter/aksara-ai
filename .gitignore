@@ -1,0 +1,9 @@
+# Python
+__pycache__/
+*.py[cod]
+venv/
+.env
+
+# Test files
+test.webp
+test.jpg

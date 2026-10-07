@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Aksara AI - Baca Aksara Jawa dengan AI</title>
+<meta name="description" content="Foto aksara Jawa, AI mentransliterasi ke Latin dan menerjemahkan ke Bahasa Indonesia.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Javanese:wght@400;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">ꦲ</div>
+      <div>
+        <div class="brand-name">AKSARA AI</div>
+        <div class="brand-sub">LOGICODIX 2026</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <div class="topbar-badge">BETA</div>
+      <button id="btnInfo" class="info-btn" aria-label="Info tim">i</button>
+    </div>
+  </header>
+
+  <main id="view-scan" class="view active">
+    <section class="hero">
+      <h1>Foto Aksara Jawa,<br>AI yang <span class="gold">Membaca.</span></h1>
+      <p>Arahkan kamera ke papan nama, prasasti, atau buku beraksara Jawa.</p>
+    </section>
+
+    <section class="card">
+      <div id="previewWrap" class="preview hidden">
+        <img id="previewImg" alt="Pratinjau">
+        <button id="btnRetake" class="btn-ghost">Ganti foto</button>
+      </div>
+      <div id="cameraWrap" class="camera hidden">
+        <video id="cameraVideo" playsinline muted></video>
+        <div class="camera-actions">
+          <button id="btnCapture" class="btn-primary">Ambil Foto</button>
+          <button id="btnCameraClose" class="btn-ghost">Tutup</button>
+        </div>
+      </div>
+      <div id="pickActions" class="pick-actions">
+        <button id="btnOpenCamera" class="btn-primary btn-block">
+          <span class="ico">&#128247;</span> Buka Kamera
+        </button>
+        <button id="btnUpload" class="btn-secondary btn-block">
+          <span class="ico">&#128193;</span> Upload Foto
+        </button>
+        <input type="file" id="fileInput" accept="image/*" class="hidden">
+        <p class="hint">Bisa foto langsung atau upload dari galeri. Maks 8MB.<br>Tips: foto dekat, tegak lurus, dan cukup cahaya.</p>
+      </div>
+      <button id="btnScan" class="btn-gold btn-block hidden">Pindai dengan AI</button>
+    </section>
+
+    <section id="loadingCard" class="card hidden">
+      <div class="loader"></div>
+      <p id="loadingText" class="loading-text">AI sedang membaca aksara...</p>
+    </section>
+
+    <section id="resultCard" class="card hidden">
+      <div class="result-head">
+        <h2>Hasil Pembacaan</h2>
+        <span id="resultModel" class="model-tag"></span>
+      </div>
+      <div id="confBadge" class="conf hidden"></div>
+      <div class="result-block">
+        <div class="result-label">Aksara Terdeteksi</div>
+        <div id="resultAksara" class="result-aksara"></div>
+      </div>
+      <div class="result-block">
+        <div class="result-label">Transliterasi Latin</div>
+        <div id="resultLatin" class="result-latin"></div>
+        <button class="btn-mini" data-copy="resultLatin">Salin</button>
+      </div>
+      <div class="result-block">
+        <div class="result-label">Arti Bahasa Indonesia</div>
+        <div id="resultID" class="result-id"></div>
+        <button class="btn-mini" data-copy="resultID">Salin</button>
+      </div>
+      <div id="altWrap" class="hidden">
+        <div class="result-label">Kemungkinan Lain</div>
+        <div id="altChips" class="chips"></div>
+      </div>
+      <div id="sugWrap" class="suggest hidden"></div>
+      <button id="btnSaveHistory" class="btn-secondary btn-block">Simpan ke Riwayat</button>
+    </section>
+
+    <section id="errorCard" class="card error hidden">
+      <p id="errorText"></p>
+      <button id="btnErrorRetry" class="btn-secondary btn-block">Coba Lagi</button>
+    </section>
+  </main>
+
+  <main id="view-learn" class="view">
+    <section class="hero">
+      <h1>Belajar <span class="gold">Aksara.</span></h1>
+      <p>Ketuk kartu untuk melihat cara bacanya.</p>
+    </section>
+    <div class="seg">
+      <button id="segFlash" class="seg-btn active">Flashcard</button>
+      <button id="segQuiz" class="seg-btn">Kuis</button>
+    </div>
+
+    <section id="flashWrap" class="card flashcard" tabindex="0">
+      <div class="flash-inner" id="flashInner">
+        <div class="flash-face flash-front"><div id="flashAksara" class="flash-aksara"></div></div>
+        <div class="flash-face flash-back">
+          <div id="flashLatin" class="flash-latin"></div>
+          <div id="flashName" class="flash-name"></div>
+        </div>
+      </div>
+      <div class="flash-nav">
+        <button id="flashPrev" class="btn-mini">&larr; Sebelumnya</button>
+        <span id="flashCount" class="flash-count"></span>
+        <button id="flashNext" class="btn-mini">Berikutnya &rarr;</button>
+      </div>
+    </section>
+
+    <section id="quizWrap" class="card hidden">
+      <div class="quiz-score">Skor: <b id="quizScore">0</b> / <span id="quizTotal">0</span></div>
+      <div id="quizQ" class="quiz-q"></div>
+      <div id="quizOpts" class="quiz-opts"></div>
+      <div id="quizFeedback" class="quiz-feedback"></div>
+      <button id="quizNext" class="btn-primary btn-block hidden">Soal Berikutnya</button>
+    </section>
+  </main>
+
+  <main id="view-convert" class="view">
+    <section class="hero">
+      <h1>Latin ke <span class="gold">Aksara.</span></h1>
+      <p>Ketik teks Latin, jadi aksara Jawa.</p>
+    </section>
+    <section class="card">
+      <textarea id="latinInput" rows="3" maxlength="200" placeholder="Contoh: Sugeng rawuh ing Ngayogyakarta"></textarea>
+      <button id="btnConvert" class="btn-gold btn-block">Ubah ke Aksara</button>
+      <div id="convertLoading" class="loading-text hidden">AI sedang menulis aksara...</div>
+      <div id="aksaraOut" class="aksara-out hidden"></div>
+      <button id="btnCopyAksara" class="btn-mini hidden">Salin Aksara</button>
+    </section>
+  </main>
+
+  <main id="view-history" class="view">
+    <section class="hero">
+      <h1><span class="gold">Riwayat</span> Pindai.</h1>
+      <p>Hasil pindaian tersimpan di perangkat ini.</p>
+    </section>
+    <div id="historyList"></div>
+    <button id="btnClearHistory" class="btn-ghost hidden">Hapus Semua Riwayat</button>
+  </main>
+
+  <nav class="bottomnav">
+    <button class="nav-btn active" data-view="view-scan"><span class="nav-ico">&#128247;</span><span>Pindai</span></button>
+    <button class="nav-btn" data-view="view-learn"><span class="nav-ico">&#127891;</span><span>Belajar</span></button>
+    <button class="nav-btn" data-view="view-convert"><span class="nav-ico">ꦏ</span><span>Aksara</span></button>
+    <button class="nav-btn" data-view="view-history"><span class="nav-ico">&#128218;</span><span>Riwayat</span></button>
+  </nav>
+
+  <div id="infoModal" class="modal hidden">
+    <div class="modal-box">
+      <button id="btnInfoClose" class="modal-close">&times;</button>
+      <div class="brand-mark modal-mark">ꦲ</div>
+      <h2>AKSARA AI</h2>
+      <p class="modal-sub">Foto aksara Jawa, AI yang membaca.<br>Smart &amp; Fun Education — LOGICODIX 2026</p>
+      <div class="team-name" id="teamName">TIM AKSARA AI</div>
+      <div class="member-list">
+        <div class="member"><b>Rafi Budiansyah</b><span>202443500232 · Teknik Informatika</span></div>
+        <div class="member"><b>Ahmad Dandi Subhani</b><span>202343500126 · Teknik Informatika</span></div>
+        <div class="member"><b>Rendy Setiawan</b><span>202343501763 · Teknik Informatika</span></div>
+        <div class="member"><b>Wakhid Pangestu</b><span>202443500833 · Teknik Informatika</span></div>
+      </div>
+      <p class="modal-foot">Universitas Indraprasta PGRI</p>
+    </div>
+  </div>
+
+</div>
+<div id="toast" class="toast"></div>
+<script src="app.js"></script>
+</body>
+</html>
